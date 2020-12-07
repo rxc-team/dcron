@@ -88,10 +88,14 @@ func (d *Dcron) GetLogger() *logrus.Logger {
 }
 
 func (d *Dcron) info(format string, v ...interface{}) {
-	d.logger.Infof(format, v...)
+	d.logger.WithFields(logrus.Fields{
+		"log_type": "JOB",
+	}).Infof(format, v...)
 }
 func (d *Dcron) err(format string, v ...interface{}) {
-	d.logger.Errorf(format, v...)
+	d.logger.WithFields(logrus.Fields{
+		"log_type": "JOB",
+	}).Errorf(format, v...)
 }
 
 //AddJob  add a job
