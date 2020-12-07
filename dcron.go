@@ -99,18 +99,18 @@ func (d *Dcron) err(format string, v ...interface{}) {
 }
 
 //AddJob  add a job
-func (d *Dcron) AddJob(jobName, cronStr string, job Job) (err error) {
+func (d *Dcron) AddJob(jobName, cronStr string, job Job) (id cron.EntryID, err error) {
 	return d.addJob(jobName, cronStr, nil, job)
 }
 
 //AddFunc add a cron func
-func (d *Dcron) AddFunc(jobName, cronStr string, cmd func()) (err error) {
+func (d *Dcron) AddFunc(jobName, cronStr string, cmd func()) (id cron.EntryID, err error) {
 	return d.addJob(jobName, cronStr, cmd, nil)
 }
-func (d *Dcron) addJob(jobName, cronStr string, cmd func(), job Job) (err error) {
+func (d *Dcron) addJob(jobName, cronStr string, cmd func(), job Job) (id cron.EntryID, err error) {
 	d.info("addJob '%s' :  %s", jobName, cronStr)
 	if _, ok := d.jobs[jobName]; ok {
-		return errors.New("jobName already exist")
+		return 0, errors.New("jobName already exist")
 	}
 	innerJob := JobWarpper{
 		Name:    jobName,
@@ -121,12 +121,12 @@ func (d *Dcron) addJob(jobName, cronStr string, cmd func(), job Job) (err error)
 	}
 	entryID, err := d.cr.AddJob(cronStr, innerJob)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	innerJob.ID = entryID
 	d.jobs[jobName] = &innerJob
 
-	return nil
+	return entryID, nil
 }
 
 // Remove Job
@@ -135,15 +135,6 @@ func (d *Dcron) Remove(jobName string) {
 		delete(d.jobs, jobName)
 		d.cr.Remove(job.ID)
 	}
-}
-
-// GetJobEntryID 获取job执行的ID
-func (d *Dcron) GetJobEntryID(jobName string) cron.EntryID {
-	if job, ok := d.jobs[jobName]; ok {
-		return job.ID
-	}
-
-	return 0
 }
 
 // Next 获取job下次执行时间
@@ -155,8 +146,8 @@ func (d *Dcron) Next(jobName string) time.Time {
 	return time.Time{}
 }
 
-// HealthCheck 检查当前任务是否在运行中
-func (d *Dcron) HealthCheck(jobName string) cron.Entry {
+// GetJobInfo 获取当前任务详情
+func (d *Dcron) GetJobInfo(jobName string) cron.Entry {
 	if job, ok := d.jobs[jobName]; ok {
 		return d.cr.Entry(job.ID)
 	}
