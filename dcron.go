@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	. "github.com/libi/dcron/driver"
 	"github.com/robfig/cron/v3"
+	"github.com/rxc-team/dcron/driver"
 )
 
 const defaultReplicas = 50
@@ -32,7 +32,7 @@ type Dcron struct {
 }
 
 //NewDcron create a Dcron
-func NewDcron(serverName string, driver Driver, cronOpts ...cron.Option) *Dcron {
+func NewDcron(serverName string, driver driver.Driver, cronOpts ...cron.Option) *Dcron {
 	dcron := newDcron(serverName)
 	dcron.crOptions = cronOpts
 	dcron.cr = cron.New(dcron.crOptions...)
@@ -41,7 +41,7 @@ func NewDcron(serverName string, driver Driver, cronOpts ...cron.Option) *Dcron 
 }
 
 //NewDcronWithOption create a Dcron with Dcron Option
-func NewDcronWithOption(serverName string, driver Driver, dcronOpts ...Option) *Dcron {
+func NewDcronWithOption(serverName string, driver driver.Driver, dcronOpts ...Option) *Dcron {
 	dcron := newDcron(serverName)
 	for _, opt := range dcronOpts {
 		opt(dcron)

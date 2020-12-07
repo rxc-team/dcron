@@ -1,11 +1,13 @@
 package dcron
 
 import (
-	"github.com/robfig/cron/v3"
 	"log"
 	"time"
+
+	"github.com/robfig/cron/v3"
 )
 
+// Option options
 type Option func(*Dcron)
 
 // WithLogger both set dcron and cron logger.

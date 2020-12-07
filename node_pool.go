@@ -1,10 +1,11 @@
 package dcron
 
 import (
-	"github.com/libi/dcron/consistenthash"
-	"github.com/libi/dcron/driver"
 	"sync"
 	"time"
+
+	"github.com/rxc-team/dcron/consistenthash"
+	"github.com/rxc-team/dcron/driver"
 )
 
 //NodePool is a node pool
@@ -40,6 +41,7 @@ func newNodePool(serverName string, driver driver.Driver, dcron *Dcron, updateDu
 	return nodePool
 }
 
+// StartPool start a pool
 func (np *NodePool) StartPool() error {
 	var err error
 	np.Driver.SetTimeout(np.updateDuration)

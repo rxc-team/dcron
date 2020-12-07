@@ -2,13 +2,14 @@ package dcron
 
 import (
 	"fmt"
-	dredis "github.com/libi/dcron/driver/redis"
-	"github.com/gomodule/redigo/redis"
-	"github.com/robfig/cron/v3"
 	"log"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/gomodule/redigo/redis"
+	"github.com/robfig/cron/v3"
+	dredis "github.com/rxc-team/dcron/driver/redis"
 )
 
 type TestJob1 struct {
