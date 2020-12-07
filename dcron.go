@@ -2,12 +2,13 @@ package dcron
 
 import (
 	"errors"
-	. "github.com/libi/dcron/driver"
-	"github.com/robfig/cron/v3"
 	"log"
 	"os"
 	"sync"
 	"time"
+
+	. "github.com/libi/dcron/driver"
+	"github.com/robfig/cron/v3"
 )
 
 const defaultReplicas = 50
@@ -116,6 +117,33 @@ func (d *Dcron) Remove(jobName string) {
 		delete(d.jobs, jobName)
 		d.cr.Remove(job.ID)
 	}
+}
+
+// GetJobEntryID 获取job执行的ID
+func (d *Dcron) GetJobEntryID(jobName string) cron.EntryID {
+	if job, ok := d.jobs[jobName]; ok {
+		return job.ID
+	}
+
+	return 0
+}
+
+// Next 获取job下次执行时间
+func (d *Dcron) Next(jobName string) time.Time {
+	if job, ok := d.jobs[jobName]; ok {
+		return d.cr.Entry(job.ID).Next
+	}
+
+	return time.Time{}
+}
+
+// HealthCheck 检查当前任务是否在运行中
+func (d *Dcron) HealthCheck(jobName string) cron.Entry {
+	if job, ok := d.jobs[jobName]; ok {
+		return d.cr.Entry(job.ID)
+	}
+
+	return cron.Entry{}
 }
 
 func (d *Dcron) allowThisNodeRun(jobName string) bool {
