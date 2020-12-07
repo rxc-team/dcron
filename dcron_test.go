@@ -2,14 +2,13 @@ package dcron
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/robfig/cron/v3"
 	dredis "github.com/rxc-team/dcron/driver/redis"
+	"github.com/sirupsen/logrus"
 )
 
 type TestJob1 struct {
@@ -59,7 +58,7 @@ func Test(t *testing.T) {
 	dcron2.Start()
 
 	// set logger
-	logger := log.New(os.Stdout, "[test]", log.LstdFlags)
+	logger := logrus.New()
 	// wrap cron recover
 	rec := CronOptionChain(cron.Recover(cron.PrintfLogger(logger)))
 

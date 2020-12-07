@@ -2,13 +2,14 @@ package dcron
 
 import (
 	"errors"
-	"log"
 	"os"
 	"sync"
 	"time"
 
+	nested "github.com/antonfisher/nested-logrus-formatter"
 	"github.com/robfig/cron/v3"
 	"github.com/rxc-team/dcron/driver"
+	"github.com/sirupsen/logrus"
 )
 
 const defaultReplicas = 50
@@ -22,7 +23,7 @@ type Dcron struct {
 	nodePool   *NodePool
 	isRun      bool
 
-	logger *log.Logger
+	logger *logrus.Logger
 
 	nodeUpdateDuration time.Duration
 	hashReplicas       int
@@ -53,9 +54,22 @@ func NewDcronWithOption(serverName string, driver driver.Driver, dcronOpts ...Op
 }
 
 func newDcron(serverName string) *Dcron {
+	log := logrus.New()
+
+	log.Out = os.Stdout
+	log.Level = logrus.InfoLevel
+	formatter := &nested.Formatter{
+		HideKeys:        true,
+		NoFieldsColors:  false,
+		NoColors:        false,
+		TimestampFormat: "2006-01-02 15:04:05",
+	}
+
+	log.SetFormatter(formatter)
+
 	return &Dcron{
 		ServerName:         serverName,
-		logger:             log.New(os.Stdout, "[dcron] ", log.LstdFlags),
+		logger:             log,
 		jobs:               make(map[string]*JobWarpper),
 		crOptions:          make([]cron.Option, 0),
 		nodeUpdateDuration: defaultDuration,
@@ -64,20 +78,20 @@ func newDcron(serverName string) *Dcron {
 }
 
 //SetLogger set dcron logger
-func (d *Dcron) SetLogger(logger *log.Logger) {
+func (d *Dcron) SetLogger(logger *logrus.Logger) {
 	d.logger = logger
 }
 
 //GetLogger get dcron logger
-func (d *Dcron) GetLogger() *log.Logger {
+func (d *Dcron) GetLogger() *logrus.Logger {
 	return d.logger
 }
 
 func (d *Dcron) info(format string, v ...interface{}) {
-	d.logger.Printf("INFO: "+format, v...)
+	d.logger.Infof(format, v...)
 }
 func (d *Dcron) err(format string, v ...interface{}) {
-	d.logger.Printf("ERR: "+format, v...)
+	d.logger.Errorf(format, v...)
 }
 
 //AddJob  add a job

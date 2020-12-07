@@ -1,17 +1,17 @@
 package dcron
 
 import (
-	"log"
 	"time"
 
 	"github.com/robfig/cron/v3"
+	"github.com/sirupsen/logrus"
 )
 
 // Option options
 type Option func(*Dcron)
 
 // WithLogger both set dcron and cron logger.
-func WithLogger(logger *log.Logger) Option {
+func WithLogger(logger *logrus.Logger) Option {
 	return func(dcron *Dcron) {
 		//set dcron logger
 		dcron.logger = logger
