@@ -2,10 +2,11 @@ package dcron
 
 import (
 	"fmt"
-	"github.com/LibiChai/dcron/driver/redis"
-	"github.com/robfig/cron/v3"
 	"testing"
 	"time"
+
+	"github.com/robfig/cron/v3"
+	"github.com/rxc-team/dcron/driver/redis"
 )
 
 type TestJob1 struct {
@@ -48,7 +49,6 @@ func Test(t *testing.T) {
 	//panic recover test
 	dcron2.AddFunc("s2 test1", "* * * * *", func() {
 		panic("panic test")
-		fmt.Println("执行 service2 test1 任务", time.Now().Format("15:04:05"))
 	})
 	dcron2.AddFunc("s2 test2", "* * * * *", func() {
 		fmt.Println("执行 service2 test2 任务", time.Now().Format("15:04:05"))

@@ -2,7 +2,7 @@ dcron
 ==============
 [![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)
 [![Build Status](https://travis-ci.org/LibiChai/dcron.svg?branch=master)](https://travis-ci.org/LibiChai/dcron)
-[![Go Report Card](https://goreportcard.com/badge/github.com/LibiChai/dcron)](https://goreportcard.com/report/github.com/LibiChai/dcron)
+[![Go Report Card](https://goreportcard.com/badge/github.com/rxc-team/dcron)](https://goreportcard.com/report/github.com/rxc-team/dcron)
 
 分布式定时任务库
 
