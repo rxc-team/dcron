@@ -3,9 +3,11 @@ package redis
 import (
 	"errors"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/google/uuid"
-	"time"
 )
 
 // GlobalKeyPrefix is global redis key preifx
@@ -76,9 +78,17 @@ func (rd *RedisDriver) heartBear(nodeID string) {
 	key := nodeID
 	tickers := time.NewTicker(rd.timeout / 2)
 	for range tickers.C {
-		_, err := rd.do("EXPIRE", key, int(rd.timeout/time.Second))
+
+		result, err := rd.do("EXPIRE", key, int(rd.timeout/time.Second))
 		if err != nil {
 			panic(err)
+		}
+		if result == 0 {
+			value := strings.Split(key, ":")[1]
+			_, err := rd.do("SETEX", key, int(rd.timeout/time.Second), value)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 }
