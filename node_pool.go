@@ -9,7 +9,7 @@ import (
 )
 
 const defaultReplicas = 50
-const defaultDuration = 30
+const defaultDuration = 1
 
 //NodePool is a node pool
 type NodePool struct {
