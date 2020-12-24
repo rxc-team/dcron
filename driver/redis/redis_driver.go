@@ -8,10 +8,13 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 // GlobalKeyPrefix is global redis key preifx
 const GlobalKeyPrefix = "distributed-cron:"
+
+var log = logrus.New()
 
 // RedisConf is redis config
 type Conf struct {
@@ -79,12 +82,15 @@ func (rd *RedisDriver) heartBear(nodeID string) {
 	tickers := time.NewTicker(rd.timeout / 2)
 	for range tickers.C {
 
+		// log.Infof("[%v] 重置过期时间，node: %v", time.Now().Format("2006-01-02 15:04:05"), nodeID)
 		result, err := rd.do("EXPIRE", key, int(rd.timeout/time.Second))
 		if err != nil {
 			panic(err)
 		}
-		if result == 0 {
-			value := strings.Split(key, ":")[1]
+		// log.Infof("[%v]重置过期时间结果，result: %T %v", time.Now().Format("2006-01-02 15:04:05"), result, result)
+		if result.(int64) == 0 {
+			value := strings.Split(key, ":")[2]
+			// log.Errorf("[%v]节点消失，重置过期时间失败，node: %v,重新创建：%v", time.Now().Format("2006-01-02 15:04:05"), nodeID, value)
 			_, err := rd.do("SETEX", key, int(rd.timeout/time.Second), value)
 			if err != nil {
 				panic(err)
